@@ -1,0 +1,14 @@
+node_modules
+dist
+*.tsbuildinfo
+coverage
+test-results
+playwright-report
+blob-report
+.vite
+.DS_Store
+*.local
+
+# Aplicativo desktop
+.electron-cache
+release

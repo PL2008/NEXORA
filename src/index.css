@@ -1,0 +1,165 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ——— Tokens de tema. Claro por padrão; o escuro é selecionado, não invertido. ——— */
+:root {
+  color-scheme: light;
+  --canvas: #f6f6f4;
+  --surface: #ffffff;
+  --surface-2: #f3f3f0;
+  --surface-3: #eaeae6;
+  --line: rgb(11 11 12 / 0.08);
+  --line-strong: rgb(11 11 12 / 0.14);
+  --ink: #0b0b0c;
+  --ink-2: #52514e;
+  --ink-3: #85847e;
+  --inverse: #ffffff;
+  --accent: #2a78d6;
+  --accent-ink: #1c5cab;
+  --accent-soft: #eaf2fc;
+  --good: #16803c;
+  --good-soft: #e9f6ec;
+  --warn: #9a5b00;
+  --warn-soft: #fdf3e0;
+  --bad: #c33232;
+  --bad-soft: #fcecec;
+  --focus: #2a78d6;
+  --shadow-card: 0 1px 2px rgb(11 11 12 / 0.04), 0 1px 1px rgb(11 11 12 / 0.02);
+  --shadow-pop: 0 12px 32px -8px rgb(11 11 12 / 0.18), 0 2px 6px rgb(11 11 12 / 0.06);
+
+  /* gráficos */
+  --chart-grid: #ecebe6;
+  --chart-axis: #c9c8c0;
+  --chart-label: #85847e;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --ramp-1: #86b6ef;
+  --ramp-2: #5598e7;
+  --ramp-3: #2a78d6;
+  --ramp-4: #1c5cab;
+  --meter-track: #dceafb;
+}
+
+.dark {
+  color-scheme: dark;
+  --canvas: #0b0b0c;
+  --surface: #161618;
+  --surface-2: #1d1d20;
+  --surface-3: #26262a;
+  --line: rgb(255 255 255 / 0.08);
+  --line-strong: rgb(255 255 255 / 0.14);
+  --ink: #f4f4f2;
+  --ink-2: #b9b8b1;
+  --ink-3: #807f79;
+  --inverse: #0b0b0c;
+  --accent: #3987e5;
+  --accent-ink: #86b6ef;
+  --accent-soft: rgb(57 135 229 / 0.16);
+  --good: #3fbf5f;
+  --good-soft: rgb(63 191 95 / 0.13);
+  --warn: #f2b440;
+  --warn-soft: rgb(242 180 64 / 0.13);
+  --bad: #f07070;
+  --bad-soft: rgb(240 112 112 / 0.13);
+  --focus: #5598e7;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.02);
+  --shadow-pop: 0 16px 40px -8px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.06);
+
+  --chart-grid: #232326;
+  --chart-axis: #38383c;
+  --chart-label: #807f79;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --ramp-1: #184f95;
+  --ramp-2: #256abf;
+  --ramp-3: #3987e5;
+  --ramp-4: #86b6ef;
+  --meter-track: #1d3250;
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-inverse: var(--inverse);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --shadow-card: var(--shadow-card);
+  --shadow-pop: var(--shadow-pop);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+  input[type='date']::-webkit-calendar-picker-indicator {
+    opacity: 0.55;
+    cursor: pointer;
+  }
+  .dark input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+  input[type='number']::-webkit-inner-spin-button {
+    opacity: 0.4;
+  }
+}
+
+@layer utilities {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

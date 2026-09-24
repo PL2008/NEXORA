@@ -1,0 +1,72 @@
+name: Aplicativo Windows
+
+# Gera o NEXORA para Windows (portátil + instalador) num computador Windows
+# e publica uma Release com os arquivos para download.
+on:
+  push:
+    branches: [main, 'claude/**']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: windows-app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Verificar (tipos, lint, testes, build)
+        run: npm run check
+
+      - name: Testar o aplicativo desktop
+        run: npm run app:test
+
+      - name: Empacotar
+        run: npx electron-builder --win portable nsis --x64 --publish never
+
+      - name: Versão
+        id: version
+        shell: bash
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NEXORA-Windows-${{ steps.version.outputs.version }}
+          path: release/NEXORA-*.exe
+          if-no-files-found: error
+
+      - name: Publicar Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: NEXORA ${{ steps.version.outputs.version }}
+          make_latest: true
+          files: release/NEXORA-*.exe
+          body: |
+            ## NEXORA · Gestão — aplicativo para Windows
+
+            _Criado Por Pedro Lucas!_
+
+            **Baixe um dos arquivos abaixo (em "Assets"):**
+
+            - **NEXORA-Portatil-${{ steps.version.outputs.version }}.exe** — dê dois cliques e use, sem instalar.
+            - **NEXORA-Instalador-${{ steps.version.outputs.version }}.exe** — instala e cria um atalho na área de trabalho e no menu Iniciar (abre mais rápido no dia a dia).
+
+            Os dados ficam salvos no computador (`%APPDATA%\NEXORA`) e continuam lá entre usos e atualizações.
+
+            Na primeira vez, o Windows pode mostrar “O Windows protegeu o computador” (o aplicativo não tem assinatura digital paga): clique em **Mais informações → Executar assim mesmo**.

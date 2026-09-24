@@ -1,0 +1,127 @@
+{
+  "name": "nexora-gestao",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Sistema de gestão da NEXORA — vendas, recebimentos, despesas, clientes, propostas e contratos.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "e2e": "playwright test",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "app": "vite build && electron .",
+    "app:win": "vite build && electron-builder --win",
+    "app:test": "playwright test -c playwright.desktop.config.ts",
+    "app:icons": "node scripts/make-icons.mjs && node scripts/make-splash.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "dexie": "^4.4.6",
+    "dexie-react-hooks": "^4.4.0",
+    "lucide-react": "^1.48.0",
+    "motion": "^13.4.3",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router": "^7.18.4",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.56.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^24.13.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "fake-indexeddb": "^6.2.5",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.9",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "resedit": "^3.1.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.70.1",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.1"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "main": "electron/main.cjs",
+  "author": {
+    "name": "Pedro Lucas"
+  },
+  "homepage": "https://github.com/pl2008/nexora",
+  "build": {
+    "appId": "com.nexora.gestao",
+    "productName": "NEXORA",
+    "copyright": "Criado Por Pedro Lucas!",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json",
+      "!node_modules/**/*"
+    ],
+    "asar": true,
+    "afterPack": "scripts/after-pack.cjs",
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false,
+      "executableName": "NEXORA",
+      "artifactName": "NEXORA-Windows-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "NEXORA-Portatil-${version}.exe",
+      "unpackDirName": "NEXORA",
+      "splashImage": "build/splash.bmp"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "artifactName": "NEXORA-Instalador-${version}.exe",
+      "shortcutName": "NEXORA",
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "uninstallDisplayName": "NEXORA · Gestão"
+    },
+    "electronLanguages": [
+      "pt-BR",
+      "en-US"
+    ]
+  },
+  "productName": "NEXORA"
+}
