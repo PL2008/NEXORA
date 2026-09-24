@@ -1,7 +1,7 @@
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
-import { _electron as electron, expect, test, type ElectronApplication } from '@playwright/test'
+import { _electron as electron, expect, test, type ElectronApplication, type Page } from '@playwright/test'
 
 /**
  * Testa o aplicativo desktop (Electron) com a build de produção em dist/.
@@ -9,19 +9,29 @@ import { _electron as electron, expect, test, type ElectronApplication } from '@
  */
 const root = path.resolve(import.meta.dirname, '..')
 let userData = ''
+let running: ElectronApplication | null = null
 
 async function launch(): Promise<ElectronApplication> {
   const args = [root, `--user-data-dir=${userData}`]
   if (process.platform === 'linux' && process.getuid?.() === 0) args.unshift('--no-sandbox')
-  return electron.launch({ args, cwd: root })
+  running = await electron.launch({ args, cwd: root })
+  return running
+}
+
+/** Navega pelo endereço interno — independe do layout (barra lateral ou menu “Mais”). */
+async function open(win: Page, route: string) {
+  await win.goto(`app://nexora${route}`)
 }
 
 test.beforeEach(() => {
   userData = mkdtempSync(path.join(tmpdir(), 'nexora-desktop-'))
 })
 
-test.afterEach(() => {
-  rmSync(userData, { recursive: true, force: true })
+test.afterEach(async () => {
+  await running?.close().catch(() => undefined)
+  running = null
+  // No Windows o Chromium pode segurar arquivos por um instante após fechar.
+  rmSync(userData, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 })
 })
 
 test('abre, salva dados no computador e mantém ao reabrir', async () => {
@@ -37,14 +47,14 @@ test('abre, salva dados no computador e mantém ao reabrir', async () => {
   await expect(win).toHaveTitle('Visão geral · NEXORA')
   expect(await win.evaluate(() => location.href)).toBe('app://nexora/')
 
-  await win.getByRole('link', { name: 'Configurações' }).click()
+  await open(win, '/configuracoes')
   await expect(win.getByTestId('credit')).toHaveText('Criado Por Pedro Lucas!')
   await expect(win.getByTestId('storage-summary')).toContainText('Salvos neste computador')
   await win.getByLabel('Nome da empresa').fill('NEXORA')
   await win.getByRole('button', { name: 'Salvar' }).click()
   await expect(win.getByText('Configurações salvas')).toBeVisible()
 
-  await win.getByRole('link', { name: 'Clientes' }).click()
+  await open(win, '/clientes')
   await win.getByRole('button', { name: 'Novo cliente' }).first().click()
   await win.getByRole('dialog', { name: 'Novo cliente' }).getByLabel('Nome', { exact: true }).fill('Padaria Aurora')
   await win.getByRole('button', { name: 'Salvar cliente' }).click()
@@ -60,10 +70,10 @@ test('abre, salva dados no computador e mantém ao reabrir', async () => {
   app = await launch()
   win = await app.firstWindow()
   await expect(win.getByRole('heading', { level: 1 })).toHaveText('Olá, NEXORA')
-  await win.getByRole('link', { name: 'Clientes' }).click()
+  await open(win, '/clientes')
   await expect(win.getByRole('list', { name: 'Clientes' })).toContainText('Padaria Aurora')
-  await expect(win.getByText('Criado Por Pedro Lucas!').first()).toBeVisible()
-  await app.close()
+  await open(win, '/configuracoes')
+  await expect(win.getByTestId('credit')).toHaveText('Criado Por Pedro Lucas!')
 })
 
 test('links externos não abrem dentro do aplicativo', async () => {
@@ -76,5 +86,4 @@ test('links externos não abrem dentro do aplicativo', async () => {
   await win.waitForTimeout(500)
   expect(await win.evaluate(() => location.origin)).toBe('app://nexora')
   expect(app.windows()).toHaveLength(1)
-  await app.close()
 })

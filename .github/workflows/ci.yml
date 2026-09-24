@@ -3,7 +3,9 @@ name: CI
 on:
   push:
     branches: [main, 'claude/**']
+    paths-ignore: ['portfolio/**']
   pull_request:
+    paths-ignore: ['portfolio/**']
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -14,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
