@@ -29,7 +29,9 @@ function buildCsp() {
   try {
     const html = fs.readFileSync(INDEX, 'utf8')
     hashes = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)]
-      .map((m) => `'sha256-${crypto.createHash('sha256').update(m[1]).digest('base64')}'`)
+      // O HTML normaliza CRLF para LF antes de o navegador calcular o hash
+      // (no Windows o Git pode fazer checkout com CRLF).
+      .map((m) => `'sha256-${crypto.createHash('sha256').update(m[1].replace(/\r\n?/g, '\n')).digest('base64')}'`)
       .join(' ')
   } catch {
     // sem index.html: a janela mostrará erro de carregamento de qualquer forma

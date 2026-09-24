@@ -1,0 +1,7 @@
+# Quebras de linha LF em todos os sistemas (inclusive Windows).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.bmp binary
+*.woff2 binary

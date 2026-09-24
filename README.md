@@ -46,6 +46,11 @@ npm run app:icons    # regenera ícones e tela de abertura a partir do logo
 
 No Windows, também é possível gerar um instalador com atalho na área de trabalho: `npx electron-builder --win nsis`.
 
+## Portfólio
+
+O site de apresentação da NEXORA fica em `portfolio/` (HTML, CSS e JavaScript estáticos, sem build) e é publicado na Vercel.
+Para ver localmente: `npx serve portfolio`.
+
 ## Scripts
 
 | Script              | O que faz                                                |
